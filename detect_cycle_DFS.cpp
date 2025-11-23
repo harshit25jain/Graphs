@@ -54,3 +54,61 @@ int main() {
 
     return 0;
 }
+/*
+---------------------------- DRY RUN ----------------------------
+
+Graph:
+0: [1]
+1: [0, 2]
+2: [1, 3]
+3: [2, 4]
+4: [3, 1]   <-- Edge 4 → 1 creates cycle (1 → 2 → 3 → 4 → 1)
+
+Initial:
+visited = [0,0,0,0,0]
+
+Start main loop:
+i = 0 → visited[0] = false → call CycleDetect(0, -1)
+
+CycleDetect(0, -1):
+    visited[0] = 1
+    neighbors: [1]
+      j=0 → neighbor = 1
+        parent = -1 → ok
+        visited[1] = 0 → recurse CycleDetect(1, 0)
+
+CycleDetect(1, 0):
+    visited[1] = 1
+    neighbors: [0, 2]
+      j=0 → neighbor = 0 → parent == 0 → skip
+      j=1 → neighbor = 2 → visited[2] = 0 → recurse CycleDetect(2, 1)
+
+CycleDetect(2, 1):
+    visited[2] = 1
+    neighbors: [1, 3]
+      j=0 → neighbor = 1 → parent == 1 → skip
+      j=1 → neighbor = 3 → visited[3] = 0 → recurse CycleDetect(3, 2)
+
+CycleDetect(3, 2):
+    visited[3] = 1
+    neighbors: [2, 4]
+      j=0 → neighbor = 2 → parent == 2 → skip
+      j=1 → neighbor = 4 → visited[4] = 0 → recurse CycleDetect(4, 3)
+
+CycleDetect(4, 3):
+    visited[4] = 1
+    neighbors: [3, 1]
+      j=0 → neighbor = 3 → parent == 3 → skip
+      j=1 → neighbor = 1 → visited[1] = 1 AND parent != 1
+               → BACK EDGE FOUND → cycle detected → return 1
+
+This 1 returns all the way up the recursion:
+CycleDetect(4,3) → CycleDetect(3,2) → CycleDetect(2,1) → CycleDetect(1,0) → CycleDetect(0,-1)
+
+isCycle returns TRUE
+
+Output:
+Graph contains a cycle
+
+---------------------------------------------------------------
+*/
