@@ -59,3 +59,89 @@ int main() {
 
     return 0;
 }
+/*
+--------------------- DRY RUN (BFS) ---------------------
+
+Graph adjacency:
+0: [1]
+1: [0, 2]
+2: [1, 3]
+3: [2, 4]
+4: [3, 1]   <-- this 4->1 edge will create the cycle
+
+Initial:
+visited = [0, 0, 0, 0, 0]
+queue = empty
+
+Start BFS (the code begins from node 0):
+visited[0] = 1
+push (0, -1)
+queue: [(0, -1)]
+
+Iteration 1:
+ pop (0, -1)
+ neighbors of 0: [1]
+  neighbor = 1
+   parent = -1 -> not equal, continue
+   visited[1] == 0 -> not visited
+   mark visited[1] = 1
+   push (1, 0)
+ queue: [(1, 0)]
+ visited: [1,1,0,0,0]
+
+Iteration 2:
+ pop (1, 0)
+ neighbors of 1: [0,2]
+  neighbor = 0
+   parent == 0 -> skip (this is the edge back to parent)
+  neighbor = 2
+   parent != 2
+   visited[2] == 0 -> mark visited[2] = 1
+   push (2, 1)
+ queue: [(2, 1)]
+ visited: [1,1,1,0,0]
+
+Iteration 3:
+ pop (2, 1)
+ neighbors of 2: [1,3]
+  neighbor = 1
+   parent == 1 -> skip
+  neighbor = 3
+   visited[3] == 0 -> mark visited[3] = 1
+   push (3, 2)
+ queue: [(3, 2)]
+ visited: [1,1,1,1,0]
+
+Iteration 4:
+ pop (3, 2)
+ neighbors of 3: [2,4]
+  neighbor = 2
+   parent == 2 -> skip
+  neighbor = 4
+   visited[4] == 0 -> mark visited[4] = 1
+   push (4, 3)
+ queue: [(4, 3)]
+ visited: [1,1,1,1,1]
+
+Iteration 5:
+ pop (4, 3)
+ neighbors of 4: [3,1]
+  neighbor = 3
+   parent == 3 -> skip
+  neighbor = 1
+   parent != 1
+   visited[1] == 1 AND not parent -> **cycle detected**
+   BFS returns true immediately
+
+Propagation:
+ isCycle receives true -> main prints "Graph contains a cycle"
+
+Complexity reminder:
+ - Time: O(V + E) since BFS touches each vertex and edge once (edges may be checked twice in undirected graph)
+ - Space: O(V) for visited[] and the BFS queue
+
+Notes:
+ - This implementation starts BFS only from node 0. For disconnected graphs, you'd need to loop over all vertices and start BFS from any unvisited vertex.
+ - The core cycle check is: if neighbor is visited and neighbor != parent -> cycle.
+-------------------------------------------------------
+*/
